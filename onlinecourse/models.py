@@ -108,6 +108,8 @@ class Question(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     content = models.CharField(max_length = 30)
     grade = models.FloatField()
+    title = models.CharField(max_length=200, default="title")
+    order = models.IntegerField(default=0)
 
     # <HINT> A sample model method to calculate if learner get the score of the question
     def is_get_score(self, selected_ids):
@@ -129,6 +131,8 @@ class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     content = models.CharField(max_length = 30)
     is_correct = models.BooleanField()
+    title = models.CharField(max_length=200, default="title")
+    order = models.IntegerField(default=0)
 
 
 # <HINT> The submission model
