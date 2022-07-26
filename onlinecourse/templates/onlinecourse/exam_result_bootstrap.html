@@ -39,18 +39,49 @@
     {% if grade > 80 %}
     <div class="alert alert-success">
        <!--HINT Display passed info -->
-       <h5>You have passed! Score: {{grade}}</h5>
+       <h5>You have passed! Score: {{grade_int}} / 100</h5>
     </div>
         {% else %}
         <div class="alert alert-danger">
             <!--HINT Display failed info -->
-            <h5>You have failed! Score: {{grade}}</h5>
+            <h5>You have failed! Score: {{grade_int}} / 100</h5>
         </div>
         <a class="btn btn-link text-danger" href="{% url 'onlinecourse:course_details' course.id %}">Re-test</a>
         {% endif %}
         <div class="card-columns-vertical mt-1">
         <h5 class="">Exam results</h5>
             <!--HINT Display exam results-->
+            {% for question in mylesson.question_set.all %}
+                <div class="card-columns-vertical">
+                    <div class="card mt-1">
+                        <div class="card-header"><h6>{{question.content}} (Points: {{question.grade}})</h6>
+                            {% for choice in question.choice_set.all %}
+                                {% if choice in choices %}
+                                    {% if choice.is_correct == True %}
+                                        <div class = "card-body">
+                                            <label style = 'color:green'>Correct Answer: {{choice.content}}</label>
+                                        </div>
+                                    {% else %}
+                                        <div class = "card-body">
+                                            <label style = 'color:red'>{{choice.content}}</label>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    {% if choice.is_correct == True %}
+                                    <div class = "card-body">
+                                        Correct Answer: {{choice.content}}
+                                    </div>
+                                    {% else %}
+                                    <div class = "card-body">
+                                        {{choice.content}}
+                                    </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
     </div>
 </body>

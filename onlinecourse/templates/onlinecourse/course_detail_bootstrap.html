@@ -46,20 +46,20 @@
                 {% for lesson in course.lesson_set.all %}
                     <div class="card mt-1">
                         <div class="card-header"><h5>Lesson {{lesson.order|add:1}}: {{lesson.title}}</h5></div>
+                        <div class="card-body">{{lesson.content}}</div>
                         <button data-toggle="collapse" data-target="#exam{{lesson.order}}" class = "collapsed" aria-expanded = "false">Start Exam</button>
                         <div id="exam{{lesson.order}}" class="collapse" style>
-                            <div class="card-body">{{lesson.content}}</div>
                             <form id="questionform" action="submit/" method="post">
                                 {% for question in lesson.question_set.all %}
                                     <div class="card mt-1">
-                                        <div class="card-header"><h6>{{question.content}}</h6>
+                                        <div class="card-header"><h6>{{question.content}} (Points: {{question.grade}})</h6>
                                             {% csrf_token %}
                                             <div class="form-group">
                                                 {% for choice in question.choice_set.all %}
                                                 <div class="form-check">
-                                                    <input type="checkbox" name="choice_{{choice.order}}"
-                                                    class="form-check-input" id="{{choice.order}}"
-                                                    value="{{choice.order}}">{{ choice.content }}
+                                                    <input type="checkbox" name="choice_{{choice.id}}"
+                                                    class="form-check-input" id="{{choice.id}}"
+                                                    value="{{choice.id}}">{{ choice.content }}
                                                 </div>
                                                 
                                                 {% endfor %}
@@ -72,6 +72,7 @@
                         </div>
                     </div>
                 {% endfor %}
+                
             </div>
             <!-- Task: show questions and choices -->
             <!-- <HINT> Use Bootstrap Collapse to hide exam first, more details could be found here

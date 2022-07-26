@@ -135,7 +135,7 @@ def extract_answers(request):
         if key.startswith('choice'):
             value = request.POST[key]
             choice_id = int(value)
-            submitted_anwsers.append(Choice.objects.get(id = choice_id + 1))
+            submitted_anwsers.append(Choice.objects.get(id = choice_id))
     #print("extract_answers")
     #print(submitted_answers)
     return submitted_anwsers
@@ -152,15 +152,38 @@ def show_exam_result(request, course_id, submission_id):
     course = get_object_or_404(Course, pk=course_id)
     submission = get_object_or_404(Submission, pk=submission_id)
     choices = submission.choices.all()
+    mylesson = ""
+    for choice in choices:
+        mylesson = choice.question.lesson
+    print(mylesson)
+    print(choices)
     total_score = 0.0
     earned_score = 0.0
-    for choice in choices:
-        total_score = total_score + choice.question.grade
-    for choice in choices.filter(is_correct = True):
-        earned_score = earned_score + (choice.question.grade)
-    #print("show_exam_result")
-    #print(total_score)
+    
+    for question in mylesson.question_set.all():
+        total_score = total_score + question.grade
+    #for choice in choices:
+        #total_score = total_score + choice.question.grade
+    #for lesson in course.lesson_set.all():
+    for question in mylesson.question_set.all():
+        shouldAdd = True
+        isPresent = False
+        for selectchoice in choices:
+            if selectchoice in question.choice_set.all() and not selectchoice.is_correct:
+                shouldAdd = False
+        for setquestions in question.choice_set.all():
+            if setquestions in choices:
+                isPresent = True
+        if shouldAdd and isPresent:
+            earned_score = earned_score + question.grade    
+    #for choice in choices.filter(is_correct = True):
+        #earned_score = earned_score + (choice.question.grade)
+    print("show_exam_result")
+    print(total_score)
+    print(earned_score)
     context['course'] = course
     context['grade'] = (earned_score/total_score) * 100.0
+    context['grade_int'] = int((earned_score/total_score) * 100.0)
     context['choices'] = choices
+    context['mylesson'] = mylesson
     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
