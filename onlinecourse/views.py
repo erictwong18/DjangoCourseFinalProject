@@ -160,7 +160,7 @@ def show_exam_result(request, course_id, submission_id):
         earned_score = earned_score + (choice.question.grade)
     #print("show_exam_result")
     #print(total_score)
-    context['Course'] = course
-    context['Grade'] = (earned_score/total_score) * 100.0
-    context['Choices'] = choices
+    context['course'] = course
+    context['grade'] = (earned_score/total_score) * 100.0
+    context['choices'] = choices
     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
