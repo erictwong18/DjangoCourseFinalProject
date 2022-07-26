@@ -46,10 +46,10 @@
                 {% for lesson in course.lesson_set.all %}
                     <div class="card mt-1">
                         <div class="card-header"><h5>Lesson {{lesson.order|add:1}}: {{lesson.title}}</h5></div>
-                        <button data-toggle="collapse" data-target="#exam{{lesson.order}}">Start Exam</button>
-                        <div id="exam{{lesson.order}}" class="collapse">
+                        <button data-toggle="collapse" data-target="#exam{{lesson.order}}" class = "collapsed" aria-expanded = "false">Start Exam</button>
+                        <div id="exam{{lesson.order}}" class="collapse" style>
                             <div class="card-body">{{lesson.content}}</div>
-                            <form id="questionform" action="submit" method="post">
+                            <form id="questionform" action="submit/" method="post">
                                 {% for question in lesson.question_set.all %}
                                     <div class="card mt-1">
                                         <div class="card-header"><h6>{{question.content}}</h6>
@@ -67,6 +67,8 @@
                                         </div>
                                     </div>
                                 {% endfor %}
+                                <input class="btn btn-success btn-block" type="submit" value="Submit">
+                            </form>
                         </div>
                     </div>
                 {% endfor %}

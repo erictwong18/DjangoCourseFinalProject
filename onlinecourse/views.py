@@ -100,7 +100,7 @@ def enroll(request, course_id):
         course.total_enrollment += 1
         course.save()
 
-    return HttpResponseRedirect(reverse(viewname='onlinecourse:course_details', args=(course.id,)))
+    return HttpResponseRedirect(reverse(viewname='onlinecourse:course_details', args=(course.id)))
 
 
 # <HINT> Create a submit view to create an exam submission record for a course enrollment,
@@ -116,21 +116,26 @@ def submit(request, course_id):
     myenrollment = Enrollment.objects.get(user=user, course=course)
     mysubmission = Submission.objects.create(enrollment=myenrollment)
     myanswers = extract_answers(request)
-    for answer in myanswers:
-        mysubmission.choices.add(answer)
+    mysubmission.choices.set(myanswers)
+    print(myanswers)
+    #for answer in myanswers:
+        #addChoice = get_object_or_404(Choice, pk = answer)
+        #mysubmission.choices.add(addChoice)
     #print("submit")
     #print(myanswers)
-    return HttpResponseRedirect(reverse(viewname='onlinecourse:submit', args=(course.id,mysubmission.id)))
+    mysubmission.save()
+    return HttpResponseRedirect(reverse(viewname='onlinecourse:show_exam_result', args=(course.id,mysubmission.id)))
 
 
 # <HINT> A example method to collect the selected choices from the exam form from the request object
 def extract_answers(request):
     submitted_anwsers = []
     for key in request.POST:
+        print("Key: " + str(key))
         if key.startswith('choice'):
             value = request.POST[key]
             choice_id = int(value)
-            submitted_anwsers.append(choice_id)
+            submitted_anwsers.append(Choice.objects.get(id = choice_id + 1))
     #print("extract_answers")
     #print(submitted_answers)
     return submitted_anwsers
@@ -148,11 +153,14 @@ def show_exam_result(request, course_id, submission_id):
     submission = get_object_or_404(Submission, pk=submission_id)
     choices = submission.choices.all()
     total_score = 0.0
+    earned_score = 0.0
+    for choice in choices:
+        total_score = total_score + choice.question.grade
     for choice in choices.filter(is_correct = True):
-        total_score = total_score + (choice.question.grade)
+        earned_score = earned_score + (choice.question.grade)
     #print("show_exam_result")
     #print(total_score)
     context['Course'] = course
-    context['Grade'] = total_score
+    context['Grade'] = (earned_score/total_score) * 100.0
     context['Choices'] = choices
     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
