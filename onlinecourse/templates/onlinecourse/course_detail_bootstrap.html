@@ -49,7 +49,7 @@
                         <button data-toggle="collapse" data-target="#exam{{lesson.order}}">Start Exam</button>
                         <div id="exam{{lesson.order}}" class="collapse">
                             <div class="card-body">{{lesson.content}}</div>
-                            <form id="questionform" action="point to a submit view" method="post">
+                            <form id="questionform" action="submit" method="post">
                                 {% for question in lesson.question_set.all %}
                                     <div class="card mt-1">
                                         <div class="card-header"><h6>{{question.content}}</h6>
