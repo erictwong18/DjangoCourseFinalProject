@@ -3,6 +3,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views
 
+app_name = ''
+urlpatterns = [
+    path(route = '', view=views.CourseListView.as_view(), name='index_default'),
+]
+
 app_name = 'onlinecourse'
 urlpatterns = [
     # route is a string contains a URL pattern
