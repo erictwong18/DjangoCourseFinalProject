@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 # <HINT> Import any new Models here
-from .models import Course, Enrollment, Question, Choice, Submission
+from .models import Course, Enrollment, Question, Choice, Submission, Lesson
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -115,8 +115,11 @@ def submit(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     user = request.user
     print("ENDPOINT")
-    print(type(user))
+    print(user)
     print("ENDPOINT2")
+    if str(user) is "AnonymousUser":
+        print("IF IS TRUE")
+        return HttpResponseRedirect(reverse(viewname='onlinecourse:login'))
     myenrollment = Enrollment.objects.get(user=user, course=course)
     mysubmission = Submission.objects.create(enrollment=myenrollment)
     myanswers = extract_answers(request)
@@ -156,7 +159,7 @@ def show_exam_result(request, course_id, submission_id):
     course = get_object_or_404(Course, pk=course_id)
     submission = get_object_or_404(Submission, pk=submission_id)
     choices = submission.choices.all()
-    mylesson = ""
+    mylesson = get_object_or_404(Lesson, pk=1)
     for choice in choices:
         mylesson = choice.question.lesson
     print(mylesson)
@@ -185,6 +188,8 @@ def show_exam_result(request, course_id, submission_id):
     print("show_exam_result")
     print(total_score)
     print(earned_score)
+    if total_score is 0.0:
+        total_score = 1.0
     context['course'] = course
     context['grade'] = (earned_score/total_score) * 100.0
     context['grade_int'] = int((earned_score/total_score) * 100.0)
